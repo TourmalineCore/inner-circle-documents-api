@@ -14,10 +14,5 @@ public class DocumentsMapping : IEntityTypeConfiguration<Document>
         new ValueConverter<Instant, DateTime>(v =>
          v.ToDateTimeUtc(),
          v => Instant.FromDateTimeUtc(v));
-
-        //builder.Property(e => e.DateCreateDocument)
-        //    .HasConversion(instantConverter);
-        //builder.Property(e => e.DateDocument)
-        //    .HasConversion(instantConverter);
     }
 }
