@@ -27,9 +27,11 @@
 
   <ItemGroup>
     <None Remove="Models\" />
+    <None Remove="ci\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Models\" />
+    <Folder Include="ci\" />
   </ItemGroup>
   <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
 
