@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - feature/add-basic-settings
       
   pull_request:
 
