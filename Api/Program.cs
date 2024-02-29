@@ -26,7 +26,7 @@ builder.AddAppSwagger();
 
 var configuration = builder.AddAppConfiguration(args);
 
-builder.AddAppAuthentication(configuration);
+builder.AddAppAuthentication();
 
 builder.AddAppLogging();
 

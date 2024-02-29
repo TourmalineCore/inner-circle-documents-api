@@ -6,8 +6,9 @@ namespace Api.Configuration;
 
 public static class AuthenticationExtensions
 {
-    public static void AddAppAuthentication(this WebApplicationBuilder builder, ConfigurationManager configuration)
+    public static void AddAppAuthentication(this WebApplicationBuilder builder)
     {
+        var configuration = builder.Configuration;
         var authenticationOptions = configuration.GetSection(nameof(AuthenticationOptions)).Get<AuthenticationOptions>();
         builder.Services.AddJwtAuthentication(authenticationOptions)
             .WithUserClaimsProvider<UserClaimsProvider>(UserClaimsProvider.PermissionClaimType);
