@@ -1,26 +1,58 @@
-﻿var builder = WebApplication.CreateBuilder(args);
+﻿using Microsoft.EntityFrameworkCore;
+using Application;
+using DataAccess;
+using Api;
+using TourmalineCore.AspNetCore.JwtAuthentication.Core;
+using Application.Services.Options;
+using Api.Configuration;
 
-// Add services to the container.
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("CompensationsSpecificOrigins",
+                      policy =>
+                      {
+                          policy.WithOrigins("*")
+                          .AllowAnyHeader()
+                          .AllowAnyMethod();
+                      });
+});
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
+builder.AddAppSwagger();
+
+var configuration = builder.AddAppConfiguration(args);
+
+builder.AddAppAuthentication();
+
+builder.AddAppLogging();
+
+builder.Services.AddApplication();
+builder.Services.AddPersistence(configuration);
+builder.Services.Configure<InnerCircleServiceUrls>(configuration.GetSection(nameof(InnerCircleServiceUrls)));
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+app.UseAppSwagger();
+
+app.ConfigureExceptionHandler();
+
+
+using (var serviceScope = app.Services.CreateScope())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    var context = serviceScope.ServiceProvider.GetRequiredService<DocumentsDbContext>();
+    await context.Database.MigrateAsync();
 }
 
-app.UseHttpsRedirection();
+app.UseRouting();
 
-app.UseAuthorization();
+app.UseCors("DocumentsSpecificOrigins");
 
-app.MapControllers();
+app.UseJwtAuthentication();
+
+app.UseEndpoints(endpoints => { endpoints.MapControllers().RequireCors("DocumentsSpecificOrigins"); });
 
 app.Run();
-

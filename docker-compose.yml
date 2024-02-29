@@ -1,0 +1,20 @@
+version: "3.8"
+
+services:
+  db-debug:
+    image: postgres:14
+    restart: always
+    container_name: 'documents-db-debug'
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: Documents
+    ports:
+      - 11235:5432
+    networks:
+      - documents-deb
+
+networks:
+  documents-deb: {}
+  ic-backend-deb:
+    external: true
