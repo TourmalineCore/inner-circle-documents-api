@@ -1,6 +1,6 @@
-using Api.Models;
 using Microsoft.AspNetCore.Diagnostics;
 using System.Net;
+using System.Text.Json;
 
 namespace Api;
 
@@ -25,5 +25,15 @@ public static class ExceptionMiddlewareExtensions
                 }
             });
         });
+    }
+
+    private class ErrorDetails
+    {
+        public int StatusCode { get; set; }
+        public string Message { get; set; }
+        public override string ToString()
+        {
+            return JsonSerializer.Serialize(this);
+        }
     }
 }
