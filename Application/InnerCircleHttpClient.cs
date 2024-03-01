@@ -1,8 +1,11 @@
+using System.Net.Http.Json;
+using System.Web;
 using Application.Services.Options;
 using Core;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Application;
 
@@ -28,11 +31,27 @@ public class InnerCircleHttpClient : IInnerCircleHttpClient
 
     public async Task SendMailingPayslips(List<PayslipsItem> payslips, List<Employee> employees)
     {
-        var matches = payslips.Join(employees,
-                item1 => item1.LastName,
-                item2 => item2.LastName,
-                (item1, item2) => new { File = item1.File, CorporateEmail = item2.CorporateEmail });
+        var mailsData = payslips.Join(employees,
+            payslip => payslip.LastName,
+            employee => employee.LastName,
+            (payslip, employee) => new MailPayslipsModel
+            (
+                employee.CorporateEmail,
+                payslip.File.FileName.Substring(0, payslip.File.FileName.Length - 4),
+                payslip.File
+            ));
 
-        Console.WriteLine(matches);
+        var link = $"{_urls.EmailSenderServiceUrl}/send-document";
+
+        foreach(var mailData in mailsData)
+        {
+            await _client.PostAsJsonAsync(link,
+            new
+            {
+                To = mailData.To,
+                Subject = mailData.Subject,
+                File = mailData.File
+            });
+        }
     }
 }
