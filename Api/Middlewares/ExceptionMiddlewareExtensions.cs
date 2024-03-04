@@ -27,7 +27,7 @@ public static class ExceptionMiddlewareExtensions
         });
     }
 
-    private class ErrorDetails
+    public class ErrorDetails
     {
         public int StatusCode { get; set; }
         public string Message { get; set; }
