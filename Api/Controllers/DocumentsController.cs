@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 namespace Api.Controllers;
 
 [ApiController]
-[Route("api")]
+[Route("api/documents")]
 [Consumes("multipart/form-data")]
 public class DocumentsController : Controller
 {
