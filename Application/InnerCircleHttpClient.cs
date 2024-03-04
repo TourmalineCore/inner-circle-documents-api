@@ -38,20 +38,27 @@ public class InnerCircleHttpClient : IInnerCircleHttpClient
             (
                 employee.CorporateEmail,
                 payslip.File.FileName.Substring(0, payslip.File.FileName.Length - 4),
+                " ",
                 payslip.File
             ));
-
+       
         var link = $"{_urls.EmailSenderServiceUrl}/send-document";
 
-        foreach(var mailData in mailsData)
+        foreach (var mailData in mailsData)
         {
-            await _client.PostAsJsonAsync(link,
-            new
+            await using var stream = mailData.File.OpenReadStream();
+            using var request = new HttpRequestMessage(HttpMethod.Post, link);
+            using var content = new MultipartFormDataContent
             {
-                To = mailData.To,
-                Subject = mailData.Subject,
-                File = mailData.File
-            });
+                { new StringContent(mailData.To), "To" },
+                { new StringContent(mailData.Subject), "Subject" },
+                { new StringContent(mailData.Body), "Body" },
+                { new StreamContent(stream), "File", mailData.File.FileName },
+            };
+
+            request.Content = content;
+
+            await _client.SendAsync(request);
         }
     }
 }
