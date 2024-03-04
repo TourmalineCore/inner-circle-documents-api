@@ -7,7 +7,6 @@ public class UserClaimsProvider : IUserClaimsProvider
 {
     public const string PermissionClaimType = "permissions";
 
-    public const string CanRequestDocuments = "CanRequestDocuments";
     public const string CanManageDocuments = "CanManageDocuments";
 
     public Task<List<Claim>> GetUserClaimsAsync(string login)
