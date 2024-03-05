@@ -33,9 +33,9 @@ public class DocumentsController : Controller
         {
             employees = await _client.GetEmployeesAsync();
         }
-        catch
+        catch(Exception ex)
         {
-            _logger.LogError("Employees service is not available");
+            _logger.LogError(ex.Message);
             throw new Exception("Employees service is not available");
         }
 
