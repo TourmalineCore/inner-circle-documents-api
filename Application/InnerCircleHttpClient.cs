@@ -39,7 +39,7 @@ public class InnerCircleHttpClient : IInnerCircleHttpClient
                 payslip.File
             ));
        
-        var link = $"{_urls.EmailSenderServiceUrl}/send-document";
+        var link = $"{_urls.EmailSenderServiceUrl}/mail/send-document";
 
         foreach (var mailData in mailsData)
         {
