@@ -2,8 +2,10 @@ using System.Net.Http.Json;
 using System.Web;
 using Application.Services.Options;
 using Core;
+
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+
 
 namespace Application;
 
@@ -19,11 +21,9 @@ public class InnerCircleHttpClient : IInnerCircleHttpClient
     }
 
     public async Task<List<Employee>> GetEmployeesAsync()
-    {   
-        var link = $"{_urls.SalaryServiceUrl}api/employees/all";
+    {
+        var link = $"{_urls.SalaryServiceUrl}employees/all";
         var response = await _client.GetStringAsync(link);
-     
-        throw new Exception(link);
 
         return JsonConvert.DeserializeObject<List<Employee>>(response);
     }
