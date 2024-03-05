@@ -25,7 +25,7 @@ public class InnerCircleHttpClient : IInnerCircleHttpClient
 
     public async Task<List<Employee>> GetEmployeesAsync()
     {
-        var link = $"{_urls.SalaryServiceUrl}api/salary/employees/all";
+        var link = $"{_urls.SalaryServiceUrl}api/employees/all";
         var response = await _client.GetStringAsync(link);
 
         _logger.LogError(link);
