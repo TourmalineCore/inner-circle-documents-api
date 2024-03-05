@@ -2,7 +2,6 @@
 using Application.Services;
 using Core;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
 namespace Api.Controllers;
 
@@ -45,9 +44,9 @@ public class DocumentsController : Controller
         {
             await _client.SendMailingPayslips(payslips, employees);
         }
-        catch
+        catch(Exception ex)
         {
-            _logger.LogError("Email sender service is not available");
+            _logger.LogError(ex.Message);
             throw new Exception("Email sender service is not available");
         }
        
