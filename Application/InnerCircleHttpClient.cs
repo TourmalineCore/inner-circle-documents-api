@@ -2,11 +2,8 @@ using System.Net.Http.Json;
 using System.Web;
 using Application.Services.Options;
 using Core;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Application;
 
@@ -14,21 +11,19 @@ public class InnerCircleHttpClient : IInnerCircleHttpClient
 {
     private readonly HttpClient _client;
     private readonly InnerCircleServiceUrls _urls;
-    private readonly ILogger<InnerCircleHttpClient> _logger;
 
-    public InnerCircleHttpClient(IOptions<InnerCircleServiceUrls> urls, ILogger<InnerCircleHttpClient> logger)
+    public InnerCircleHttpClient(IOptions<InnerCircleServiceUrls> urls)
     {
         _client = new HttpClient();
         _urls = urls.Value;
-        _logger = logger;
     }
 
     public async Task<List<Employee>> GetEmployeesAsync()
-    {
+    {   
         var link = $"{_urls.SalaryServiceUrl}api/employees/all";
         var response = await _client.GetStringAsync(link);
-
-        _logger.LogError(link);
+     
+        throw new Exception(link);
 
         return JsonConvert.DeserializeObject<List<Employee>>(response);
     }
