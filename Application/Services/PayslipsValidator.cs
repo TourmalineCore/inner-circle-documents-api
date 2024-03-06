@@ -41,7 +41,6 @@ public class PayslipsValidator : IPayslipsValidator
             }
         }
 
-
         if (notExistentEmployees.Count != 0)
         {
             throw new Exception($"Employees with last Names {string.Join(", ", notExistentEmployees)} doesn't exist");
