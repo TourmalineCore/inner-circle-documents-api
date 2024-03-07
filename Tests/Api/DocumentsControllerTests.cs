@@ -19,11 +19,11 @@ public class DocumentsControllerTests
 
     public DocumentsControllerTests()
     {
-        var _logger = LoggerFactory
+        var logger = LoggerFactory
           .Create(_ => { })
           .CreateLogger<DocumentsController>();
 
-        _controller = new DocumentsController(_httpClientMock.Object, _payslipsValidatorMock.Object, _logger);
+        _controller = new DocumentsController(_httpClientMock.Object, _payslipsValidatorMock.Object, logger);
     }
 
     [Fact]
@@ -51,14 +51,14 @@ public class DocumentsControllerTests
     }
 
     [Fact]
-    public async Task SendMailingPayslips_ShouldNotThrowException()
+    public async Task SendMailingPayslips_WhenServicesAreAvailable_NoException()
     {
         var exception = await Record.ExceptionAsync(() => _controller.SendMailingPayslips(_payslips));
         Assert.Null(exception);
     }
 
     [Fact]
-    public async Task SendMailingPayslips_CanCallPayslipsValidator()
+    public async Task SendMailingPayslips_PayslipsValidatorShouldBeCalledOnce()
     {
         await _controller.SendMailingPayslips(_payslips);
         _payslipsValidatorMock.Verify(x => x.ValidateAsync(_payslips, _employees));
