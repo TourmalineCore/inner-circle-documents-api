@@ -22,7 +22,6 @@ public class DocumentsController : Controller
         _logger = logger;
     }
 
-
     [HttpPost("sendMailingPayslips")]
     public async Task SendMailingPayslips([FromForm] List<PayslipsItem> payslips)
     {
