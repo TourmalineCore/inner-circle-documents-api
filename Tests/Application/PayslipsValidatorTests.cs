@@ -1,8 +1,6 @@
 using Application.Services;
 using Core;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Moq;
 using Xunit;
 
 namespace Tests.Application
@@ -12,54 +10,46 @@ namespace Tests.Application
         private readonly IPayslipsValidator _validator = new PayslipsValidator();
         private readonly List<Employee> _emptyEmployeeList = new();
 
-        [Fact]
-        public async Task PayslipsValidator_WhenPayslipsListIsEmpty_CatchException()
+        private static async Task<IFormFile> GetFormFileAsync(string fileName, string content)
         {
-            var payslipsItems = new List<PayslipsItem>();
+            var stream = new MemoryStream();
+            var writer = new StreamWriter(stream);
+            await writer.WriteAsync(content);
+            await writer.FlushAsync();
+            stream.Position = 0;
 
-            var exception = await Assert.ThrowsAsync<Exception>(() => _validator.ValidateAsync(payslipsItems, _emptyEmployeeList));
+            return new FormFile(stream, 0, stream.Length, "file", fileName);
+        }
 
+        [Fact]
+        public async Task PayslipsValidator_WhenPayslipsListIsEmpty_ShouldThrowException()
+        {
+            var exception = await Assert.ThrowsAsync<Exception>(() => _validator.ValidateAsync(new List<PayslipsItem>(), _emptyEmployeeList));
             Assert.Equal("Payslips list is empty", exception.Message);
         }
 
         [Fact]
-        public async Task PayslipsValidator_WhenSomeFileIsEmpty_CatchException()
+        public async Task PayslipsValidator_WhenSomeFileIsEmpty_ShouldThrowException()
         {
-            var content = "";
-            var fileName = "Расчетный листок Иванов за ноябрь 2023 года.pdf";
-            var stream = new MemoryStream();
-            var writer = new StreamWriter(stream);
-            writer.Write(content);
-            writer.Flush();
-            stream.Position = 0;
-
-            IFormFile fileMock = new FormFile(stream, 0, stream.Length, "file", fileName);
+            var formFile = await GetFormFileAsync("Расчетный листок Иванов за ноябрь 2023 года.pdf", "");
 
             var payslipsItems = new List<PayslipsItem> {
-                new PayslipsItem("", fileMock)
+                new PayslipsItem("", formFile),
             };
 
             var exception = await Assert.ThrowsAsync<Exception>(() => _validator.ValidateAsync(payslipsItems, _emptyEmployeeList));
 
-            Assert.Equal($"'{fileName}' is empty", exception.Message);
+            Assert.Equal($"'{formFile.FileName}' is empty", exception.Message);
         }
 
 
         [Fact]
-        public async Task PayslipsValidator_WhenSomeFileNameIsNull_CatchException()
+        public async Task PayslipsValidator_WhenSomeFileNameIsNull_ShouldThrowException()
         {
-            var content = "Something";
-            string fileName = null;
-            var stream = new MemoryStream();
-            var writer = new StreamWriter(stream);
-            writer.Write(content);
-            writer.Flush();
-            stream.Position = 0;
-
-            IFormFile fileMock = new FormFile(stream, 0, stream.Length, "file", fileName);
+            var formFile = await GetFormFileAsync(null, "Something");
 
             var payslipsItems = new List<PayslipsItem> {
-                new PayslipsItem("", fileMock)
+                new PayslipsItem("", formFile),
             };
 
             var exception = await Assert.ThrowsAsync<Exception>(() => _validator.ValidateAsync(payslipsItems, _emptyEmployeeList));
@@ -68,46 +58,30 @@ namespace Tests.Application
         }
 
         [Fact]
-        public async Task PayslipsValidator_WhenLastNameNotContainsInFileName_CatchException()
+        public async Task PayslipsValidator_WhenLastNameNotContainsInFileName_ShouldThrowException()
         {
-            var lastNameMock = "Петров";
+            var lastName = "Петров";
 
-            var content = "Something";
-            var fileName = "Расчетный листок Иванов за ноябрь 2023 года.pdf";
-            var stream = new MemoryStream();
-            var writer = new StreamWriter(stream);
-            writer.Write(content);
-            writer.Flush();
-            stream.Position = 0;
-
-            IFormFile fileMock = new FormFile(stream, 0, stream.Length, "file", fileName);
+            var formFile = await GetFormFileAsync("Расчетный листок Иванов за ноябрь 2023 года.pdf", "Something");
 
             var payslipsItems = new List<PayslipsItem> {
-                new PayslipsItem(lastNameMock, fileMock)
+                new PayslipsItem(lastName, formFile),
             };
 
             var exception = await Assert.ThrowsAsync<Exception>(() => _validator.ValidateAsync(payslipsItems, _emptyEmployeeList));
 
-            Assert.Equal($"Last name {lastNameMock} not contains in file name '{fileName}'", exception.Message);
+            Assert.Equal($"Last name {lastName} not contains in file name '{formFile.FileName}'", exception.Message);
         }
 
         [Fact]
-        public async Task PayslipsValidator_WhenEmployesWithLastNamesDoesNotExist_CatchException()
+        public async Task PayslipsValidator_WhenEmployesWithLastNamesDoesNotExist_ShouldThrowException()
         {
-            var lastNameMock = "Иванов";
+            var lastName = "Иванов";
 
-            var content = "Something";
-            var fileName = "Расчетный листок Иванов за ноябрь 2023 года.pdf";
-            var stream = new MemoryStream();
-            var writer = new StreamWriter(stream);
-            writer.Write(content);
-            writer.Flush();
-            stream.Position = 0;
-
-            IFormFile fileMock = new FormFile(stream, 0, stream.Length, "file", fileName);
+            var formFile = await GetFormFileAsync("Расчетный листок Иванов за ноябрь 2023 года.pdf", "Something");
 
             var payslipsItems = new List<PayslipsItem> {
-                new PayslipsItem(lastNameMock, fileMock)
+                new PayslipsItem(lastName, formFile),
             };
 
             var employees = new List<Employee>
@@ -117,26 +91,18 @@ namespace Tests.Application
 
             var exception = await Assert.ThrowsAsync<Exception>(() => _validator.ValidateAsync(payslipsItems, employees));
 
-            Assert.Equal($"Employees with last Names {string.Join(", ", lastNameMock)} doesn't exist", exception.Message);
+            Assert.Equal($"Employees with last Names {string.Join(", ", lastName)} doesn't exist", exception.Message);
         }
 
         [Fact]
-        public async Task PayslipsValidator_NotCatchException()
+        public async Task PayslipsValidator_ShouldNotThrowException()
         {
-            var lastNameMock = "Иванов";
+            var lastName = "Иванов";
 
-            var content = "Something";
-            var fileName = "Расчетный листок Иванов за ноябрь 2023 года.pdf";
-            var stream = new MemoryStream();
-            var writer = new StreamWriter(stream);
-            writer.Write(content);
-            writer.Flush();
-            stream.Position = 0;
-
-            IFormFile fileMock = new FormFile(stream, 0, stream.Length, "file", fileName);
+            var formFile = await GetFormFileAsync("Расчетный листок Иванов за ноябрь 2023 года.pdf", "Something");
 
             var payslipsItems = new List<PayslipsItem> {
-                new PayslipsItem(lastNameMock, fileMock)
+                new PayslipsItem(lastName, formFile),
             };
 
             var employees = new List<Employee>
