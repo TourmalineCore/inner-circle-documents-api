@@ -12,6 +12,8 @@ public class PayslipsItem
         LastName = lastName;
         File = file;
     }
+
+    public PayslipsItem() { }
 }
 
 
