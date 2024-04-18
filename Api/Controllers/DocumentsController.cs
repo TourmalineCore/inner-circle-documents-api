@@ -29,7 +29,8 @@ public class DocumentsController : Controller
 
         try
         {
-            employees = await _client.GetEmployeesAsync();
+            var tenantId = User.GetTenantId();
+            employees = await _client.GetEmployeesAsync(tenantId);
         }
         catch(Exception ex)
         {
