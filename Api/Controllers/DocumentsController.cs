@@ -14,7 +14,6 @@ public class DocumentsController : Controller
     private readonly IPayslipsValidator _payslipsValidator;
     private readonly ILogger<DocumentsController> _logger;
 
-
     public DocumentsController(IInnerCircleHttpClient client, IPayslipsValidator payslipsValidator, ILogger<DocumentsController> logger)
     {
         _client = client;
@@ -25,18 +24,7 @@ public class DocumentsController : Controller
     [HttpPost("sendMailingPayslips")]
     public async Task SendMailingPayslips([FromForm] List<PayslipsItem> payslips)
     {
-        List<Employee> employees = new List<Employee>();
-
-        try
-        {
-            var tenantId = User.GetTenantId();
-            employees = await _client.GetEmployeesAsync(tenantId);
-        }
-        catch(Exception ex)
-        {
-            _logger.LogError(ex.Message);
-            throw new Exception("Employees service is not available");
-        }
+        var employees = await GetEmployeesFromEmployeeService();
 
         await _payslipsValidator.ValidateAsync(payslips, employees);
 
@@ -50,5 +38,35 @@ public class DocumentsController : Controller
             throw new Exception("Email sender service is not available");
         }
        
+    }
+
+    [HttpGet("getEmployees")]
+    public async Task<EmployeesDto> GetEmployees()
+    {
+        var employees = await GetEmployeesFromEmployeeService();
+
+        return new EmployeesDto
+        {
+            Employees = employees
+                .Select(employee => new EmployeeDto
+                {
+                    LastName = employee.LastName
+                })
+                .ToList()
+        };
+    }
+
+    public async Task<List<Employee>> GetEmployeesFromEmployeeService()
+    {
+        try
+        {
+            var tenantId = User.GetTenantId();
+            return await _client.GetEmployeesAsync(tenantId);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message);
+            throw new Exception("Employees service is not available");
+        }
     }
 }
