@@ -1,10 +1,12 @@
 ﻿using Application;
 using Application.Services;
 using Core;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/documents")]
 [Consumes("multipart/form-data")]
@@ -24,18 +26,7 @@ public class DocumentsController : Controller
     [HttpPost("sendMailingPayslips")]
     public async Task SendMailingPayslips([FromForm] List<PayslipsItem> payslips)
     {
-        List<Employee> employees = new List<Employee>();
-
-        try
-        {
-            var tenantId = User.GetTenantId();
-            employees = await _client.GetEmployeesAsync(tenantId);
-        }
-        catch(Exception ex)
-        {
-            _logger.LogError(ex.Message);
-            throw new Exception("Employees service is not available");
-        }
+        var employees = await GetEmployeesFromEmployeeService();
 
         await _payslipsValidator.ValidateAsync(payslips, employees);
 
@@ -54,18 +45,7 @@ public class DocumentsController : Controller
     [HttpGet("getEmployees")]
     public async Task<EmployeesDto> GetEmployees()
     {
-        List<Employee> employees = new List<Employee>();
-
-        try
-        {
-            var tenantId = User.GetTenantId();
-            employees = await _client.GetEmployeesAsync(tenantId);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex.Message);
-            throw new Exception("Employees service is not available");
-        }
+        var employees = await GetEmployeesFromEmployeeService();
 
         return new EmployeesDto
         {
@@ -76,5 +56,19 @@ public class DocumentsController : Controller
                 })
                 .ToList()
         };
+    }
+
+    public async Task<List<Employee>> GetEmployeesFromEmployeeService()
+    {
+        try
+        {
+            var tenantId = User.GetTenantId();
+            return await _client.GetEmployeesAsync(tenantId);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message);
+            throw new Exception("Employees service is not available");
+        }
     }
 }
