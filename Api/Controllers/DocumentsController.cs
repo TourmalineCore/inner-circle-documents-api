@@ -3,6 +3,7 @@ using Application.Services;
 using Core;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using TourmalineCore.AspNetCore.JwtAuthentication.Core.Filters;
 
 namespace Api.Controllers;
 
@@ -23,6 +24,7 @@ public class DocumentsController : Controller
         _logger = logger;
     }
 
+    [RequiresPermission(UserClaimsProvider.CanManageDocuments)]
     [HttpPost("sendMailingPayslips")]
     public async Task SendMailingPayslips([FromForm] List<PayslipsItem> payslips)
     {
@@ -42,6 +44,7 @@ public class DocumentsController : Controller
        
     }
 
+    [RequiresPermission(UserClaimsProvider.CanManageDocuments)]
     [HttpGet("getEmployees")]
     public async Task<EmployeesDto> GetEmployees()
     {
