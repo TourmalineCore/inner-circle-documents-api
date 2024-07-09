@@ -6,11 +6,13 @@ using TourmalineCore.AspNetCore.JwtAuthentication.Core;
 using Application.Services.Options;
 using Api.Configuration;
 
+const string CorsPolicyName = "DocumentsSpecificOrigins";
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("CompensationsSpecificOrigins",
+    options.AddPolicy(CorsPolicyName,
                       policy =>
                       {
                           policy.WithOrigins("*")
@@ -49,10 +51,10 @@ using (var serviceScope = app.Services.CreateScope())
 
 app.UseRouting();
 
-app.UseCors("DocumentsSpecificOrigins");
+app.UseCors(CorsPolicyName);
 
 app.UseJwtAuthentication();
 
-app.UseEndpoints(endpoints => { endpoints.MapControllers().RequireCors("DocumentsSpecificOrigins"); });
+app.UseEndpoints(endpoints => { endpoints.MapControllers().RequireCors(CorsPolicyName); });
 
 app.Run();
