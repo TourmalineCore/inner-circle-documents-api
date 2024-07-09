@@ -28,18 +28,7 @@ public class DocumentsController : Controller
     [HttpPost("sendMailingPayslips")]
     public async Task SendMailingPayslips([FromForm] List<PayslipsItem> payslips)
     {
-        List<Employee> employees = new List<Employee>();
-
-        try
-        {
-            var tenantId = User.GetTenantId();
-            employees = await _client.GetEmployeesAsync(tenantId);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex.Message);
-            throw new Exception("Employees service is not available");
-        }
+        var employees = await GetEmployeesAsyncFromEmployeeService();
 
         await _payslipsValidator.ValidateAsync(payslips, employees);
 
@@ -59,18 +48,7 @@ public class DocumentsController : Controller
     [HttpGet("getEmployees")]
     public async Task<EmployeesDto> GetEmployees()
     {
-        List<Employee> employees = new List<Employee>();
-
-        try
-        {
-            var tenantId = User.GetTenantId();
-            employees = await _client.GetEmployeesAsync(tenantId);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex.Message);
-            throw new Exception("Employees service is not available");
-        }
+        var employees = await GetEmployeesAsyncFromEmployeeService();
 
         return new EmployeesDto
         {
@@ -81,5 +59,19 @@ public class DocumentsController : Controller
                 })
                 .ToList()
         };
+    }
+
+    private async Task<List<Employee>> GetEmployeesAsyncFromEmployeeService()
+    {
+        try
+        {
+            var tenantId = User.GetTenantId();
+            return await _client.GetEmployeesAsync(tenantId);
+        }
+        catch(Exception ex)
+        {
+            _logger.LogError(ex.Message);
+            throw new Exception("Employees service is not available");
+        }
     }
 }
