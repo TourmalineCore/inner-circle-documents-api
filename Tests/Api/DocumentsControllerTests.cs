@@ -5,6 +5,7 @@ using Core;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Tests.Api;
 
@@ -16,7 +17,6 @@ public class DocumentsControllerTests
     private readonly List<PayslipsItem> _payslips = It.IsAny<List<PayslipsItem>>();
     private readonly List<Employee> _employees = It.IsAny<List<Employee>>();
 
-
     public DocumentsControllerTests()
     {
         var logger = LoggerFactory
@@ -24,6 +24,19 @@ public class DocumentsControllerTests
           .CreateLogger<DocumentsController>();
 
         _controller = new DocumentsController(_httpClientMock.Object, _payslipsValidatorMock.Object, logger);
+    }
+
+    [Fact]
+    public async Task SendMailingPayslips_ShouldRequireAuthorizeAttribute()
+    {
+        var authorizeAttribute = _controller
+            .GetType()
+            .GetCustomAttributes(
+                typeof(AuthorizeAttribute),
+                true
+            );
+
+        Assert.True(authorizeAttribute.Any());
     }
 
     [Fact]
