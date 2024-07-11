@@ -1,4 +1,6 @@
 using Core;
+using System.Globalization;
+using System.Text;
 
 namespace Application.Services;
 
@@ -14,19 +16,23 @@ public class PayslipsValidator : IPayslipsValidator
 
         foreach (var payslipsItem in payslips)
         {
-            if (payslipsItem.File.Length == 0)
+            var fileLength = payslipsItem.File.Length;
+            var fileName = EncodeToUTF8(payslipsItem.File.FileName);
+            var lastNameFromFile = EncodeToUTF8(payslipsItem.LastName);
+
+            if (fileLength == 0)
             {
                 throw new Exception($"'{payslipsItem.File.FileName}' is empty");
             }
 
-            else if (payslipsItem.File.FileName is null)
+            else if (fileName is null)
             {
                 throw new Exception("Payslips name is null");
             }
 
-            else if (!payslipsItem.File.FileName.Contains(payslipsItem.LastName))
+            else if (!fileName.Contains(lastNameFromFile))
             {
-                throw new Exception($"Last name {payslipsItem.LastName} not contains in file name '{payslipsItem.File.FileName}'");
+                throw new Exception($"Last name {lastNameFromFile} not contains in file name '{fileName}'");
             }
         }
 
@@ -45,6 +51,13 @@ public class PayslipsValidator : IPayslipsValidator
         {
             throw new Exception($"Employees with last Names {string.Join(", ", notExistentEmployees)} doesn't exist");
         }
+    }
+
+    private string EncodeToUTF8(string stringToEncode)
+    {
+        byte[] utf8Bytes = Encoding.UTF8.GetBytes(stringToEncode);
+        return Encoding.UTF8.GetString(utf8Bytes);
+
     }
 }
 
