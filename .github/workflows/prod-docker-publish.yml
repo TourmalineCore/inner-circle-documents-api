@@ -1,4 +1,4 @@
-name: deploy service to dev k8s
+name: deploy service to prod k8s
 
 on:
   push:
