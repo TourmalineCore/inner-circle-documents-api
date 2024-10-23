@@ -111,7 +111,7 @@ resources:
 ## @param containerPorts.http Port to expose at ASP.NET Core container level
 ##
 containerPorts:
-  http: 80
+  http: 8080
 
 
 ## Enable to download/build ASP.NET Core app from external git repository.
