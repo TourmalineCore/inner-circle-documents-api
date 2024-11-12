@@ -1,20 +1,40 @@
 version: "3.8"
 
 services:
-  db-debug:
-    image: postgres:14
+  documents-db:
+    image: postgres:14.2-alpine
     restart: always
-    container_name: 'documents-db-debug'
+    container_name: 'documents-db'
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: Documents
+      POSTGRES_DB: documents-db
     ports:
-      - 11235:5432
+      - 10007:5432
     networks:
-      - documents-deb
+      - documents-network
+  
+  documents-api:
+    container_name: 'documents-api'
+    profiles: ['MockForDevelopment']
+    build:
+      context: .
+      dockerfile: Api/Dockerfile
+    ports:
+      - 10008:80
+    depends_on:
+      - documents-db
+    environment:
+      - ASPNETCORE_ENVIRONMENT=MockForDevelopment
+      - LOGS_PATH=/var/log/dev-compensations-api
+      - ConnectionStrings__DefaultConnection=User ID=postgres;Password=postgres;Host=documents-db;port=5432;Database=documents-db
+      - AuthenticationOptions__PublicSigningKey=MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAz+luHwhsNo4aQxYNCkaxcqL/HUcqWG1zz3pCpbyW5nbgxoo+Xw0jwAqVeRlrWHZf0WszbPObyCpmGVifyj6n0PSp5Np7431zjUhRUkxwyNSyVE5BWw5aJLyLB5EF9HH39CqtxdtWmYuLzhBS5fZT4tyR4xlQffNTxylg7xZgLfunUDRuLxdqR0JO3sjebgogrDVvHj3sif46uitipeTfUyCtqBG/JngPkMbDMNRkTH6QXnXfLgpX5Lr21O4PZPIBwCXzPCTCDMgbXHLvAzdlqgVYJcLf9xXPtVkPGOv8y+hbSTAyCNLViOLKKm2a2W4bPiElDIDwbtbHesj8zHPlpP5Q7QMtT168UxetgUeKsr5kfpxtLpE/QO4GkkqTA6rV7PQKrCTY0B5V8ZD8Ir/hlOKk8jxGe9NLui+8rLnnwJUZErT7Swp9yQL1eed2YtdrcR3q5eOE8+2pkzwjbEoFuIQidDKOghrZOwf6j217fme/xE+aEP0OPv5z07kJr2torh7tUefrVerT4Krj5LVl4DgdlkHAuILWOaYdSoLnRrsrfFa9Y1alM2D/juH9+YtaR/YjNWOhdZNMNyoDT08SbgE81ZbKmVgLGaWFLcMn/LBD6DBeRb5dRx12QZnv0jGJLVVgjTe9EqrjVF92ahGRljDIGjNzEI2f2syc0/qKS4sCAwEAAQ==
+      - InnerCircleServiceUrls__EmployeeServiceUrl=http://employees-api:80/api
+      - InnerCircleServiceUrls__EmailSenderServiceUrl=http://email-sender-api:80/api
+    networks:
+      - documents-network
 
 networks:
-  documents-deb: {}
+  documents-network: {}
   ic-backend-deb:
     external: true
