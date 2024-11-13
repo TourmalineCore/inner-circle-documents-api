@@ -1,10 +1,8 @@
-version: "3.8"
-
 services:
   documents-db:
+    container_name: 'documents-db'
     image: postgres:14.2-alpine
     restart: always
-    container_name: 'documents-db'
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
