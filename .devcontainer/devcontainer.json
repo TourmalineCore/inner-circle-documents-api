@@ -23,8 +23,8 @@
 		}
 	},
 	"containerEnv": {
-		"AUTH_API_ROOT_URL": "http://localhost:8503",
-		"API_ROOT_URL": "http://localhost:6503/api",
+		"AUTH_API_ROOT_URL": "http://localhost:8503/api",
+		"API_ROOT_URL": "http://localhost:6503",
 		"SHOULD_USE_FAKE_EXTERNAL_DEPENDENCIES": "true"
 	}
 }

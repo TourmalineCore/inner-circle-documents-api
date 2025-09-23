@@ -31,9 +31,3 @@ Run the docker compose with MockForPullRequest profile executing the following c
 ```bash
 docker compose --profile MockForPullRequest up --build
 ```
-
->Note: this also includes Karate Tests run by default. However, if you want to run the test again from Dev Container execute:
-
-```bash
-java -jar /karate.jar .
-```
