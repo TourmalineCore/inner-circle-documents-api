@@ -55,7 +55,7 @@ public class DocumentsControllerTests
     public async Task SendMailingPayslips_WhenEmployeesServiceIsNotAvailable_ShouldThrowException()
     {
         _httpClientMock
-            .Setup(x => x.GetEmployeesAsync(1))
+            .Setup(x => x.GetEmployeesAsync())
             .ThrowsAsync(new Exception());
 
         var exception = await Assert.ThrowsAsync<Exception>(() => _controller.SendMailingPayslips(_payslips));
