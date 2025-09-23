@@ -38,6 +38,6 @@ Scenario: Get Employees
     And match response.employees contains
     """
     {
-        "lastName": "Name"
+        "lastName": "#string"
     }
     """
