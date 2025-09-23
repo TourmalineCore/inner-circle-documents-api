@@ -90,4 +90,3 @@ services:
 
 networks:
   inner-circle-documents-api-network:
-

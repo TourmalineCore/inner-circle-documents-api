@@ -6,7 +6,8 @@
       "launchUrl": "swagger",
       "applicationUrl": "http://localhost:5004",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "MockForDevelopment"
+        "ASPNETCORE_ENVIRONMENT": "MockForDevelopment",
+        "ASPNETCORE_HTTP_PORTS": "80"
       },
       "dotnetRunMessages": true
     }
