@@ -1,23 +1,17 @@
-name: deploy service to dev k8s
+name: Unit Tests
 
 on:
   push:
     branches:
-      - 'feature/*' 
-      
-  pull_request:
-
-env:
-  GITHUB_REGISTRY: ghcr.io
+      - feature/*
 
 jobs:
   unit-tests:
     name: Run unit tests
-    if: github.event_name == 'push'
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v2.0.0
+        uses: actions/checkout@v4 
 
       - name: Restore application dependencies
         run: dotnet restore
