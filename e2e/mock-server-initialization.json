@@ -1,0 +1,28 @@
+[
+  {
+    "httpRequest": {
+      "method": "POST",
+      "path": "/api/auth/login"
+    },
+    "httpResponse": {
+        "statusCode": 200,
+        "body": "{\"accessToken\": { \"value\": \"eyJuYW1lSWRlbnRpZmllciI6Im1haWxAbWFpbC5ydSIsImNvcnBvcmF0ZUVtYWlsIjoibWFpbEBtYWlsLnJ1IiwidGVuYW50SWQiOiIxIiwiYWNjb3VudElkIjoiMyIsImVtcGxveWVlSWQiOiIyIiwicGVybWlzc2lvbnMiOlsiQ2FuIE1hbmFnZSBEb2N1bWVudHMiXX0=\" }}",
+        "headers": {
+            "Content-Type": [ "application/json" ]
+        }
+    }
+  },
+  {
+    "httpRequest": {
+      "method": "GET",
+      "path" : "/internal/get-employees"
+    },
+    "httpResponse": {
+      "statusCode": 200,
+      "body": "[{ \"id\": 2, \"fullName\": \"Name Name Name\", \"corporateEmail\": \"mail@mail.ru\", \"tenantId\": 1 }]",
+      "headers": {
+        "Content-Type": ["application/json"]
+      }
+    }
+  }
+]

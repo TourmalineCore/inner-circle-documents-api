@@ -1,38 +1,93 @@
 services:
-  documents-db:
-    container_name: 'documents-db'
-    image: postgres:14.2-alpine
-    restart: always
+
+  inner-circle-documents-api-db:
+    image: postgres:14
+    container_name: inner-circle-documents-api-db
+    profiles:
+      - DbOnly
+      - MockForDevelopment
+      - MockForTests
+      - MockForPullRequest
     environment:
+      POSTGRES_DB: inner-circle-documents-api-db
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: documents-db
     ports:
-      - 10007:5432
+      - 7504:5432
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
-      - documents-network
+      - inner-circle-documents-api-network
   
-  documents-api:
-    container_name: 'documents-api'
-    profiles: ['MockForDevelopment']
-    build:
-      context: .
-      dockerfile: Api/Dockerfile
-    ports:
-      - 10008:80
+  inner-circle-documents-api:
+    container_name: inner-circle-documents-api
+    profiles:
+      - MockForTests
+      - MockForPullRequest
     depends_on:
-      - documents-db
+      inner-circle-documents-api-db:
+        condition: service_healthy
+      inner-circle-documents-api-mock-server:
+        condition: service_started
+    build:
+      dockerfile: ./Api/Dockerfile
+      context: .
+      args:
+        EXCLUDE_UNIT_TESTS_FROM_BUILD: "true"
     environment:
-      - ASPNETCORE_ENVIRONMENT=MockForDevelopment
-      - LOGS_PATH=/var/log/dev-compensations-api
-      - ConnectionStrings__DefaultConnection=User ID=postgres;Password=postgres;Host=documents-db;port=5432;Database=documents-db
-      - AuthenticationOptions__PublicSigningKey=MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAz+luHwhsNo4aQxYNCkaxcqL/HUcqWG1zz3pCpbyW5nbgxoo+Xw0jwAqVeRlrWHZf0WszbPObyCpmGVifyj6n0PSp5Np7431zjUhRUkxwyNSyVE5BWw5aJLyLB5EF9HH39CqtxdtWmYuLzhBS5fZT4tyR4xlQffNTxylg7xZgLfunUDRuLxdqR0JO3sjebgogrDVvHj3sif46uitipeTfUyCtqBG/JngPkMbDMNRkTH6QXnXfLgpX5Lr21O4PZPIBwCXzPCTCDMgbXHLvAzdlqgVYJcLf9xXPtVkPGOv8y+hbSTAyCNLViOLKKm2a2W4bPiElDIDwbtbHesj8zHPlpP5Q7QMtT168UxetgUeKsr5kfpxtLpE/QO4GkkqTA6rV7PQKrCTY0B5V8ZD8Ir/hlOKk8jxGe9NLui+8rLnnwJUZErT7Swp9yQL1eed2YtdrcR3q5eOE8+2pkzwjbEoFuIQidDKOghrZOwf6j217fme/xE+aEP0OPv5z07kJr2torh7tUefrVerT4Krj5LVl4DgdlkHAuILWOaYdSoLnRrsrfFa9Y1alM2D/juH9+YtaR/YjNWOhdZNMNyoDT08SbgE81ZbKmVgLGaWFLcMn/LBD6DBeRb5dRx12QZnv0jGJLVVgjTe9EqrjVF92ahGRljDIGjNzEI2f2syc0/qKS4sCAwEAAQ==
-      - InnerCircleServiceUrls__EmployeeServiceUrl=http://employees-api:80/api
-      - InnerCircleServiceUrls__EmailSenderServiceUrl=http://email-sender-api:80/api
+      - ASPNETCORE_ENVIRONMENT=MockForPullRequest
+    ports:
+      - 6504:80
     networks:
-      - documents-network
+      - inner-circle-documents-api-network
+
+  inner-circle-documents-api-mock-server:
+    container_name: 'inner-circle-documents-api-mock-server'
+    profiles:
+      - MockForDevelopment
+      - MockForTests
+      - MockForPullRequest
+    image: mockserver/mockserver:5.15.0
+    command: -logLevel INFO
+    ports:
+      - 8504:1080
+    volumes:
+      - ./e2e/mock-server-initialization.json:/config/mock-server-initialization.json
+    environment:
+      SERVER_PORT: 1080
+      MOCKSERVER_INITIALIZATION_JSON_PATH: /config/mock-server-initialization.json
+    networks:
+      - inner-circle-documents-api-network
+
+  inner-circle-documents-api-karate-tests:
+    container_name: 'inner-circle-documents-api-karate-tests'
+    profiles:
+      - MockForPullRequest
+    build:
+      dockerfile: ./e2e/KarateDockerfile
+      context: .
+    # service_started is not what we need, we need deps to be healthy and ready, this needs to be implemented in api and mock-server first 
+    depends_on:
+      inner-circle-documents-api:
+        condition: service_started
+      inner-circle-documents-api-mock-server:
+        condition: service_started
+    # restart twice in case of not ready db or network failures
+    restart: on-failure:2
+    command: ["karate", "/karate"]
+    volumes:
+      - .:/karate
+    environment:
+      # here the port is 1080 because it needs to be an internal port, not an external which is 8501 in this case
+      AUTH_API_ROOT_URL: "http://inner-circle-documents-api-mock-server:1080"
+      API_ROOT_URL: "http://inner-circle-documents-api"
+      SHOULD_USE_FAKE_EXTERNAL_DEPENDENCIES: "true"
+    networks:
+      - inner-circle-documents-api-network
 
 networks:
-  documents-network: {}
-  ic-backend-deb:
-    external: true
+  inner-circle-documents-api-network:
+
