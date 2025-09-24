@@ -28,6 +28,7 @@ jobs:
           cd $HOME
           mkdir .kube
           echo "${{ secrets.KUBECONFIG }}" > .kube/config
+          chmod 600 .kube/config
 
       - name: Deploy
         uses: helmfile/helmfile-action@v1.9.0
