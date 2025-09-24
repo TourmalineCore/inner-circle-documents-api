@@ -4,6 +4,6 @@ namespace Application;
 
 public interface IInnerCircleHttpClient
 {
-    Task<List<Employee>> GetEmployeesAsync(long tenantId);
+    Task<List<Employee>> GetEmployeesAsync();
     Task SendMailingPayslips(List<PayslipsItem> payslips, List<Employee> employees);
 }

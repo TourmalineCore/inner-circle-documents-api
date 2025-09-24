@@ -35,13 +35,13 @@ builder.AddAppLogging();
 builder.Services.AddApplication();
 builder.Services.AddPersistence(configuration);
 builder.Services.Configure<InnerCircleServiceUrls>(configuration.GetSection(nameof(InnerCircleServiceUrls)));
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
 app.UseAppSwagger();
 
 app.ConfigureExceptionHandler();
-
 
 using (var serviceScope = app.Services.CreateScope())
 {
