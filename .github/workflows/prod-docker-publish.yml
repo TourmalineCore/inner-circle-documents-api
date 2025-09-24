@@ -28,7 +28,11 @@ jobs:
           cd $HOME
           mkdir .kube
           echo "${{ secrets.KUBECONFIG }}" > .kube/config
-          chmod 600 /home/runner/.kube/config
+
+      - name: Check helm-diff version
+        run: |
+          helm plugin list
+          helm diff version || echo "helm-diff not installed or error occurred"
 
       - name: Deploy
         uses: helmfile/helmfile-action@v1.9.0
