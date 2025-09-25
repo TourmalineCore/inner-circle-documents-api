@@ -54,6 +54,12 @@ jobs:
         with:
           repository: TourmalineCore/inner-circle-local-env
 
+      - name: Cat values file
+        run: cat deploy/values-documents-api.yaml.gotmpl
+
+      - name: Cat helmfile
+        run: cat deploy/helmfile.yaml
+
       - name: Deploy Local Env to Kind k8s
         uses: devcontainers/ci@v0.3
         with:
@@ -68,6 +74,10 @@ jobs:
             sed -i "0,/git+https:\/\/github.com\/TourmalineCore\/${{ github.event.repository.name }}.git?ref=.*/s//git+https:\/\/github.com\/TourmalineCore\/${{ github.event.repository.name }}.git?ref=${{ github.sha }}/" deploy/helmfile.yaml
             
             sed -i "0,/git::https:\/\/github.com\/TourmalineCore\/${{ github.event.repository.name }}.git@\/Api\/ci\/values-local-env.yaml?ref=.*/s//git::https:\/\/github.com\/TourmalineCore\/${{ github.event.repository.name }}.git@\/Api\/ci\/values-local-env.yaml?ref=${{ github.sha }}/" deploy/helmfile.yaml
+
+            cat deploy/values-documents-api.yaml.gotmpl
+            
+            cat deploy/helmfile.yaml
 
             kind create cluster --name inner-circle --config kind-local-config.yaml --kubeconfig ./.inner-circle-cluster-kubeconfig
             # we need to properly expose KUBECONFIG as an absolute path, pwd prints current working directory path
