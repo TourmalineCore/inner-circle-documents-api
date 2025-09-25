@@ -44,4 +44,4 @@ jobs:
             --state-values-set extraSecretEnvVars.InnerCircleServiceUrls__EmployeesServiceUrl=${{ secrets.SALARY_SERVICE_URL }}
             --state-values-set extraSecretEnvVars.InnerCircleServiceUrls__EmailSenderServiceUrl=${{ secrets.EMAIL_SENDER_SERVICE_URL }}
           helmfile-auto-init: "false"  
-          skip-plugins: "true"
+          helm-plugins: >
