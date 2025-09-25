@@ -35,7 +35,7 @@ jobs:
           helmfile-version: 'v0.164.0'
           helm-version: 'v3.18.0'
           helmfile-args: >
-            apply --namespace dev-inner-circle -f Api/ci/helmfile.yaml
+            apply --suppress-diff --namespace dev-inner-circle -f Api/ci/helmfile.yaml
             --state-values-set image.tag=sha-${{ github.sha }} 
             --state-values-set ingress.enabled=true
             --state-values-set ingress.hostname=${{ secrets.HOST }}
@@ -44,4 +44,3 @@ jobs:
             --state-values-set extraSecretEnvVars.InnerCircleServiceUrls__EmployeesServiceUrl=${{ secrets.SALARY_SERVICE_URL }}
             --state-values-set extraSecretEnvVars.InnerCircleServiceUrls__EmailSenderServiceUrl=${{ secrets.EMAIL_SENDER_SERVICE_URL }}
           helmfile-auto-init: "false"  
-          helm-plugins: >
