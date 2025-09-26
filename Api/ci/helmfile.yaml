@@ -3,9 +3,9 @@ repositories:
     url: https://charts.bitnami.com/bitnami
 
 releases:
-  - name: inner-circle-documents-api
+  - name: documents-api
     labels:
-      app: inner-circle-documents-api
+      app: documents-api
     wait: true
     chart: bitnami/aspnet-core
     version: 4.4.7
