@@ -42,4 +42,4 @@ jobs:
             --state-values-set extraSecretEnvVars.AuthenticationOptions__PublicSigningKey=${{ secrets.PUBLIC_SIGNING_KEY }}
             --state-values-set extraSecretEnvVars.InnerCircleServiceUrls__EmployeesServiceUrl=${{ secrets.SALARY_SERVICE_URL }}
             --state-values-set extraSecretEnvVars.InnerCircleServiceUrls__EmailSenderServiceUrl=${{ secrets.EMAIL_SENDER_SERVICE_URL }}
-          helmfile-auto-init: "false"  
+          helmfile-auto-init: "false"
