@@ -7,110 +7,113 @@ namespace Tests.Application;
 
 public class PayslipsValidatorTests
 {
-    private readonly IPayslipsValidator _validator = new PayslipsValidator();
-    private readonly List<Employee> _emptyEmployeeList = new();
+  private readonly IPayslipsValidator _validator = new PayslipsValidator();
+  private readonly List<Employee> _emptyEmployeeList = new();
 
-    [Fact]
-    public async Task PayslipsListMustNotBeEmpty()
+  [Fact]
+  public async Task PayslipsListMustNotBeEmpty()
+  {
+    var exception = await Assert.ThrowsAsync<Exception>(() => _validator.ValidateAsync(new List<PayslipsItem>(), _emptyEmployeeList));
+    Assert.Equal("Payslips list is empty", exception.Message);
+  }
+
+  [Fact]
+  public async Task PayslipFilesMustNotBeEmpty()
+  {
+    var formFile = await GetFormFileAsync("Расчетный листок Иванов за ноябрь 2023 года.pdf", "");
+
+    var payslipsItems = new List<PayslipsItem>
     {
-        var exception = await Assert.ThrowsAsync<Exception>(() => _validator.ValidateAsync(new List<PayslipsItem>(), _emptyEmployeeList));
-        Assert.Equal("Payslips list is empty", exception.Message);
-    }
+      new PayslipsItem("", formFile),
+    };
 
-    [Fact]
-    public async Task PayslipFilesMustNotBeEmpty()
+    var exception = await Assert.ThrowsAsync<Exception>(() => _validator.ValidateAsync(payslipsItems, _emptyEmployeeList));
+
+    Assert.Equal($"'{formFile.FileName}' is empty", exception.Message);
+  }
+
+  [Fact]
+  public async Task PayslipFileNameMustNotBeNull()
+  {
+    var formFile = await GetFormFileAsync(null, "Something");
+
+    var payslipsItems = new List<PayslipsItem>
     {
-        var formFile = await GetFormFileAsync("Расчетный листок Иванов за ноябрь 2023 года.pdf", "");
+      new PayslipsItem("", formFile),
+    };
 
-        var payslipsItems = new List<PayslipsItem> {
-            new PayslipsItem("", formFile),
-        };
+    var exception = await Assert.ThrowsAsync<Exception>(() => _validator.ValidateAsync(payslipsItems, _emptyEmployeeList));
 
-        var exception = await Assert.ThrowsAsync<Exception>(() => _validator.ValidateAsync(payslipsItems, _emptyEmployeeList));
+    Assert.Equal("Payslips name is null", exception.Message);
+  }
 
-        Assert.Equal($"'{formFile.FileName}' is empty", exception.Message);
-    }
+  [Fact]
+  public async Task LastNameMustBeIncludedInPayslipFileName()
+  {
+    const string lastName = "Петров";
 
+    var formFile = await GetFormFileAsync("Расчетный листок Иванов за ноябрь 2023 года.pdf", "Something");
 
-    [Fact]
-    public async Task PayslipFileNameMustNotBeNull()
+    var payslipsItems = new List<PayslipsItem>
     {
-        var formFile = await GetFormFileAsync(null, "Something");
+      new PayslipsItem(lastName, formFile),
+    };
 
-        var payslipsItems = new List<PayslipsItem> {
-            new PayslipsItem("", formFile),
-        };
+    var exception = await Assert.ThrowsAsync<Exception>(() => _validator.ValidateAsync(payslipsItems, _emptyEmployeeList));
 
-        var exception = await Assert.ThrowsAsync<Exception>(() => _validator.ValidateAsync(payslipsItems, _emptyEmployeeList));
+    Assert.Equal($"Last name {lastName} not contains in file name '{formFile.FileName}'", exception.Message);
+  }
 
-        Assert.Equal("Payslips name is null", exception.Message);
-    }
+  [Fact]
+  public async Task EmployesWithLastNamesShouldBeExist()
+  {
+    const string lastName = "Иванов";
 
-    [Fact]
-    public async Task LastNameMustBeIncludedInPayslipFileName()
+    var formFile = await GetFormFileAsync("Расчетный листок Иванов за ноябрь 2023 года.pdf", "Something");
+
+    var payslipsItems = new List<PayslipsItem>
     {
-        const string lastName = "Петров";
+      new PayslipsItem(lastName, formFile),
+    };
 
-        var formFile = await GetFormFileAsync("Расчетный листок Иванов за ноябрь 2023 года.pdf", "Something");
-
-        var payslipsItems = new List<PayslipsItem> {
-            new PayslipsItem(lastName, formFile),
-        };
-
-        var exception = await Assert.ThrowsAsync<Exception>(() => _validator.ValidateAsync(payslipsItems, _emptyEmployeeList));
-
-        Assert.Equal($"Last name {lastName} not contains in file name '{formFile.FileName}'", exception.Message);
-    }
-
-    [Fact]
-    public async Task EmployesWithLastNamesShouldBeExist()
+    var employees = new List<Employee>
     {
-        const string lastName = "Иванов";
+      new Employee(21, "Петров Иван Иванович", "test@mail.com")
+    };
 
-        var formFile = await GetFormFileAsync("Расчетный листок Иванов за ноябрь 2023 года.pdf", "Something");
+    var exception = await Assert.ThrowsAsync<Exception>(() => _validator.ValidateAsync(payslipsItems, employees));
 
-        var payslipsItems = new List<PayslipsItem> {
-            new PayslipsItem(lastName, formFile),
-        };
+    Assert.Equal($"Employees with last Names {string.Join(", ", lastName)} doesn't exist", exception.Message);
+  }
 
-        var employees = new List<Employee>
-        {
-            new Employee(21, "Петров Иван Иванович", "test@mail.com")
-        };
+  [Fact]
+  public async Task NoException()
+  {
+    const string lastName = "Иванов";
 
-        var exception = await Assert.ThrowsAsync<Exception>(() => _validator.ValidateAsync(payslipsItems, employees));
+    var formFile = await GetFormFileAsync("Расчетный листок Иванов за ноябрь 2023 года.pdf", "Something");
 
-        Assert.Equal($"Employees with last Names {string.Join(", ", lastName)} doesn't exist", exception.Message);
-    }
-
-    [Fact]
-    public async Task NoException()
+    var payslipsItems = new List<PayslipsItem>
     {
-        const string lastName = "Иванов";
+      new PayslipsItem(lastName, formFile),
+    };
 
-        var formFile = await GetFormFileAsync("Расчетный листок Иванов за ноябрь 2023 года.pdf", "Something");
-
-        var payslipsItems = new List<PayslipsItem> {
-            new PayslipsItem(lastName, formFile),
-        };
-
-        var employees = new List<Employee>
-        {
-            new Employee(21, "Иванов Иван Иванович", "test@mail.com")
-        };
-
-        Assert.Null(Record.Exception(() => _validator.ValidateAsync(payslipsItems, employees).Exception));
-    }
-
-    private static async Task<IFormFile> GetFormFileAsync(string fileName, string content)
+    var employees = new List<Employee>
     {
-        var stream = new MemoryStream();
-        var writer = new StreamWriter(stream);
-        await writer.WriteAsync(content);
-        await writer.FlushAsync();
-        stream.Position = 0;
+      new Employee(21, "Иванов Иван Иванович", "test@mail.com")
+    };
 
-        return new FormFile(stream, 0, stream.Length, "file", fileName);
-    }
+    Assert.Null(Record.Exception(() => _validator.ValidateAsync(payslipsItems, employees).Exception));
+  }
+
+  private static async Task<IFormFile> GetFormFileAsync(string fileName, string content)
+  {
+    var stream = new MemoryStream();
+    var writer = new StreamWriter(stream);
+    await writer.WriteAsync(content);
+    await writer.FlushAsync();
+    stream.Position = 0;
+
+    return new FormFile(stream, 0, stream.Length, "file", fileName);
+  }
 }
-
