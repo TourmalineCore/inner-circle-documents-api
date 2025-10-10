@@ -5,12 +5,12 @@ namespace Api;
 
 public class UserClaimsProvider : IUserClaimsProvider
 {
-    public const string PermissionClaimType = "permissions";
+  public const string PermissionClaimType = "permissions";
 
-    public const string CanManageDocuments = "CanManageDocuments";
+  public const string CanManageDocuments = "CanManageDocuments";
 
-    public Task<List<Claim>> GetUserClaimsAsync(string login)
-    {
-        throw new NotImplementedException();
-    }
+  public Task<List<Claim>> GetUserClaimsAsync(string login)
+  {
+    throw new NotImplementedException();
+  }
 }

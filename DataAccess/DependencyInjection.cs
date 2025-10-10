@@ -6,19 +6,19 @@ namespace DataAccess;
 
 public static class DependencyInjection
 {
-    private const string DefaultConnection = "DefaultConnection";
+  private const string DefaultConnection = "DefaultConnection";
 
-    public static void AddPersistence(this IServiceCollection services, IConfiguration configuration)
+  public static void AddPersistence(this IServiceCollection services, IConfiguration configuration)
+  {
+    var connectionString = configuration.GetConnectionString(DefaultConnection);
+
+    services.AddDbContext<DocumentsDbContext>(options =>
     {
-        var connectionString = configuration.GetConnectionString(DefaultConnection);
+      options.UseNpgsql(connectionString!,
+        o => o.UseNodaTime()
+      );
+    });
 
-        services.AddDbContext<DocumentsDbContext>(options =>
-        {
-            options.UseNpgsql(connectionString!,
-                    o => o.UseNodaTime()
-                );
-        });
-
-        services.AddScoped<DocumentsDbContext>();
-    }
+    services.AddScoped<DocumentsDbContext>();
+  }
 }

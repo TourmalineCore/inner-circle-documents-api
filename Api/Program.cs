@@ -1,10 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Application;
-using DataAccess;
 using Api;
-using TourmalineCore.AspNetCore.JwtAuthentication.Core;
-using Application.Services.Options;
 using Api.Configuration;
+using Application;
+using Application.Services.Options;
+using DataAccess;
+using Microsoft.EntityFrameworkCore;
+using TourmalineCore.AspNetCore.JwtAuthentication.Core;
 
 const string CorsPolicyName = "DocumentsSpecificOrigins";
 
@@ -12,13 +12,14 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(CorsPolicyName,
-                      policy =>
-                      {
-                          policy.WithOrigins("*")
-                          .AllowAnyHeader()
-                          .AllowAnyMethod();
-                      });
+  options.AddPolicy(CorsPolicyName,
+    policy =>
+    {
+      policy
+        .WithOrigins("*")
+        .AllowAnyHeader()
+        .AllowAnyMethod();
+    });
 });
 
 builder.Services.AddControllers();
@@ -45,8 +46,8 @@ app.ConfigureExceptionHandler();
 
 using (var serviceScope = app.Services.CreateScope())
 {
-    var context = serviceScope.ServiceProvider.GetRequiredService<DocumentsDbContext>();
-    await context.Database.MigrateAsync();
+  var context = serviceScope.ServiceProvider.GetRequiredService<DocumentsDbContext>();
+  await context.Database.MigrateAsync();
 }
 
 app.UseRouting();
