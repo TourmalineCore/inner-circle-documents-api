@@ -73,4 +73,4 @@ jobs:
     - name: Run service via docker-compose and run Karate-tests
       run: |
         # The option --exit-code-from ensures that the command's exit code exactly matches the exit code of the specified service.
-        docker compose --profile MockForPullRequest up --exit-code-from inner-circle-items-api-karate-tests
+        docker compose --profile MockForPullRequest up --exit-code-from inner-circle-documents-api-karate-tests
