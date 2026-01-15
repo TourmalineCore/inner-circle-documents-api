@@ -10,12 +10,12 @@ Scenario: Get Employees
     * def jsUtils = read('./js-utils.js')
     * def authApiRootUrl = jsUtils().getEnvVariable('AUTH_API_ROOT_URL')
     * def apiRootUrl = jsUtils().getEnvVariable('API_ROOT_URL')
-    * def authLogin = jsUtils().getEnvVariable('AUTH_LOGIN')
-    * def authPassword = jsUtils().getEnvVariable('AUTH_PASSWORD')
+    * def authLogin = jsUtils().getEnvVariable('AUTH_FIRST_TENANT_LOGIN_WITH_ALL_PERMISSIONS')
+    * def authPassword = jsUtils().getEnvVariable('AUTH_FIRST_TENANT_PASSWORD_WITH_ALL_PERMISSIONS')
     
     # Authentication
     Given url authApiRootUrl
-    And path '/auth/login'
+    And path '/login'
     And request
     """
     {
@@ -32,7 +32,7 @@ Scenario: Get Employees
 
     # Get Employees
     Given url apiRootUrl
-    And path '/api/documents/getEmployees'
+    And path '/getEmployees'
     When method GET
     Then status 200
     And match response.employees contains

@@ -81,9 +81,11 @@ services:
     volumes:
       - .:/karate
     environment:
+      AUTH_FIRST_TENANT_LOGIN_WITH_ALL_PERMISSIONS: "first-tenant-login-with-all-permissions"
+      AUTH_FIRST_TENANT_PASSWORD_WITH_ALL_PERMISSIONS: "first-tenant-password-with-all-permissions"
       # here the port is 1080 because it needs to be an internal port, not an external which is 8504 in this case
-      AUTH_API_ROOT_URL: "http://inner-circle-documents-api-mock-server:1080/api"
-      API_ROOT_URL: "http://inner-circle-documents-api"
+      AUTH_API_ROOT_URL: "http://inner-circle-documents-api-mock-server:1080/api/auth"
+      API_ROOT_URL: "http://inner-circle-documents-api/api/documents"
       SHOULD_USE_FAKE_EXTERNAL_DEPENDENCIES: "true"
     networks:
       - inner-circle-documents-api-network
