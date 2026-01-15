@@ -55,7 +55,8 @@ services:
     ports:
       - 8504:1080
     volumes:
-      - ./e2e/mock-server-initialization.json:/config/mock-server-initialization.json
+      # this is needed so that we can spin it up from within Dev Container where LOCAL_WORKSPACE_FOLDER is defined and from a simple OS terminal of the repo root
+      - ${LOCAL_WORKSPACE_FOLDER:-.}/e2e/mock-server-initialization.json:/config/mock-server-initialization.json
     environment:
       SERVER_PORT: 1080
       MOCKSERVER_INITIALIZATION_JSON_PATH: /config/mock-server-initialization.json
