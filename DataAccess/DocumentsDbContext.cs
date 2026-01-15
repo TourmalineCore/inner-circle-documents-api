@@ -5,7 +5,7 @@ namespace DataAccess;
 
 public class DocumentsDbContext : DbContext
 {
-  public DbSet<Document> Documents { get; set; }
+  public required DbSet<Document> Documents { get; set; }
 
   public DocumentsDbContext(DbContextOptions<DocumentsDbContext> options) : base(options)
   {
