@@ -67,8 +67,8 @@ services:
     profiles:
       - MockForPullRequest
     build:
-      dockerfile: ./e2e/KarateDockerfile
-      context: .
+      dockerfile: ./KarateDockerfile
+      context: ./e2e
     # service_started is not what we need, we need deps to be healthy and ready, this needs to be implemented in api and mock-server first 
     depends_on:
       inner-circle-documents-api:
@@ -79,7 +79,9 @@ services:
     restart: on-failure:2
     command: ["karate", "/karate"]
     volumes:
-      - .:/karate
+      # similar to mock-server volumes we need to support both runs: from Dev Container and from OS
+      - ${LOCAL_WORKSPACE_FOLDER:-.}:/karate
+    
     environment:
       AUTH_FIRST_TENANT_LOGIN_WITH_ALL_PERMISSIONS: "first-tenant-login-with-all-permissions"
       AUTH_FIRST_TENANT_PASSWORD_WITH_ALL_PERMISSIONS: "first-tenant-password-with-all-permissions"
