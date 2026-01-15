@@ -15,7 +15,7 @@ Scenario: Get Employees
     
     # Authentication
     Given url authApiRootUrl
-    And path '/auth/login'
+    And path '/login'
     And request
     """
     {
@@ -32,7 +32,7 @@ Scenario: Get Employees
 
     # Get Employees
     Given url apiRootUrl
-    And path '/api/documents/getEmployees'
+    And path '/getEmployees'
     When method GET
     Then status 200
     And match response.employees contains

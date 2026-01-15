@@ -82,8 +82,8 @@ services:
       - .:/karate
     environment:
       # here the port is 1080 because it needs to be an internal port, not an external which is 8504 in this case
-      AUTH_API_ROOT_URL: "http://inner-circle-documents-api-mock-server:1080/api"
-      API_ROOT_URL: "http://inner-circle-documents-api"
+      AUTH_API_ROOT_URL: "http://inner-circle-documents-api-mock-server:1080/api/auth"
+      API_ROOT_URL: "http://inner-circle-documents-api/api"
       SHOULD_USE_FAKE_EXTERNAL_DEPENDENCIES: "true"
     networks:
       - inner-circle-documents-api-network

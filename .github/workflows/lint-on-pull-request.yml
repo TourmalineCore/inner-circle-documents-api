@@ -1,4 +1,4 @@
-name: Unit Tests
+name: Lint
 
 on:
   pull_request:
@@ -6,7 +6,7 @@ on:
 
 jobs:
   unit-tests:
-    name: Run unit tests
+    name: Run linting
     runs-on: ubuntu-24.04
     steps:
       - name: Check out the repo
@@ -17,11 +17,5 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
-      - name: Restore application dependencies
-        run: dotnet restore 
-
-      - name: Build application
-        run: dotnet build --property:TreatWarningsAsErrors=true
-
-      - name: Run unit-tests
-        run: dotnet test  
+      - name: Check there are no non-formatted files
+        run: dotnet format --verify-no-changes
