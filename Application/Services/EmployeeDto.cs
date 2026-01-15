@@ -2,10 +2,10 @@ namespace Application.Services;
 
 public class EmployeesDto
 {
-  public List<EmployeeDto> Employees { get; set; }
+  public required List<EmployeeDto> Employees { get; set; }
 }
 
 public class EmployeeDto
 {
-  public string LastName { get; set; }
+  public required string LastName { get; set; }
 }

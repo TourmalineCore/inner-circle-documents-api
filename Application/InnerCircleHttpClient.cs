@@ -44,7 +44,7 @@ public class InnerCircleHttpClient : IInnerCircleHttpClient
 
     var response = await _client.GetStringAsync(link);
 
-    return JsonConvert.DeserializeObject<List<Employee>>(response);
+    return JsonConvert.DeserializeObject<List<Employee>>(response)!;
   }
 
   public async Task SendMailingPayslips(List<PayslipsItem> payslips, List<Employee> employees)
