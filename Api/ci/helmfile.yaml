@@ -18,6 +18,6 @@ releases:
       - extraSecretEnvVars:
           ConnectionStrings__DefaultConnection: "{{ .StateValues.extraSecretEnvVars.ConnectionStrings__DefaultConnection }}"
           AuthenticationOptions__PublicSigningKey: "{{ .StateValues.extraSecretEnvVars.AuthenticationOptions__PublicSigningKey }}"
-          InnerCircleServiceUrls__EmployeesServiceUrl: "{{ .StateValues.extraSecretEnvVars.InnerCircleServiceUrls__EmployeesServiceUrl }}"
-          InnerCircleServiceUrls__EmailSenderServiceUrl: "{{ .StateValues.extraSecretEnvVars.InnerCircleServiceUrls__EmailSenderServiceUrl }}"
+          InnerCircleServiceUrls__EmployeesApiRootUrl: "{{ .StateValues.extraSecretEnvVars.InnerCircleServiceUrls__EmployeesApiRootUrl }}"
+          InnerCircleServiceUrls__EmailSenderApiRootUrl: "{{ .StateValues.extraSecretEnvVars.InnerCircleServiceUrls__EmailSenderApiRootUrl }}"
           

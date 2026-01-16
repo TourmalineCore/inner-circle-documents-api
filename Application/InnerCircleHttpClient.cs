@@ -28,7 +28,7 @@ public class InnerCircleHttpClient : IInnerCircleHttpClient
 
   public async Task<List<Employee>> GetEmployeesAsync()
   {
-    var link = $"{_urls.EmployeesServiceUrl}/internal/get-employees";
+    var link = $"{_urls.EmployeesApiRootUrl}/internal/get-employees";
 
     var headerName = _authOptions.IsDebugTokenEnabled
       ? "X-DEBUG-TOKEN"
@@ -62,7 +62,7 @@ public class InnerCircleHttpClient : IInnerCircleHttpClient
       )
     );
 
-    var link = $"{_urls.EmailSenderServiceUrl}/mail/send-document";
+    var link = $"{_urls.EmailSenderApiRootUrl}/mail/send-document";
 
     foreach (var mailData in mailsData)
     {
