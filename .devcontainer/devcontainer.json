@@ -20,6 +20,8 @@
 		}
 	},
 	"containerEnv": {
+		"AUTH_FIRST_TENANT_LOGIN_WITH_ALL_PERMISSIONS": "first-tenant-login-with-all-permissions",
+		"AUTH_FIRST_TENANT_PASSWORD_WITH_ALL_PERMISSIONS": "first-tenant-password-with-all-permissions",
 		"AUTH_API_ROOT_URL": "http://localhost:8504/api/auth",
 		"API_ROOT_URL": "http://localhost:6504/api/documents",
 		"SHOULD_USE_FAKE_EXTERNAL_DEPENDENCIES": "true"
