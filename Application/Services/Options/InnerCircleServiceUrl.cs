@@ -2,7 +2,7 @@ namespace Application.Services.Options;
 
 public class InnerCircleServiceUrls
 {
-  public string EmployeesApiRootUrl { get; set; }
+  public string EmployeesServiceUrl { get; set; }
 
-  public string EmailSenderApiRootUrl { get; set; }
+  public string EmailSenderServiceUrl { get; set; }
 }
