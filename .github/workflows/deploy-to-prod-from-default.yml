@@ -1,0 +1,35 @@
+name: Deploy to Prod
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  docker-build-and-push:
+    uses: ./.github/workflows/.reusable-docker-build-and-push.yml
+
+  deploy-to-prod:
+    needs: [docker-build-and-push]
+    runs-on: self-hosted
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+
+      - name: Deploy
+        env:
+          # DB Connection String var is used as env to properly process spec symbols
+          INNER_CIRCLE_PROD_DOCUMENTS_DB_CONNECTION_STRING: ${{ secrets.INNER_CIRCLE_PROD_DOCUMENTS_DB_CONNECTION_STRING }}
+        run: |
+            helmfile cache cleanup && helmfile apply --suppress-diff --namespace "${{ secrets.INNER_CIRCLE_PROD_NAMESPACE }}" -f Api/ci/helmfile.yaml \
+            --state-values-set image.tag="sha-${{ github.sha }}" \
+            --state-values-set ingress.hostname="${{ secrets.INNER_CIRCLE_PROD_HOSTNAME }}" \
+            --state-values-set extraSecretEnvVars.ConnectionStrings__DefaultConnection="$INNER_CIRCLE_PROD_DOCUMENTS_DB_CONNECTION_STRING" \
+            --state-values-set extraSecretEnvVars.AuthenticationOptions__PublicSigningKey="${{ secrets.INNER_CIRCLE_PROD_PUBLIC_SIGNING_KEY }}" \
+            --state-values-set extraSecretEnvVars.InnerCircleServiceUrls__EmployeesServiceUrl="${{ secrets.INNER_CIRCLE_PROD_EMPLOYEES_API_ROOT_URL }}" \
+            --state-values-set extraSecretEnvVars.InnerCircleServiceUrls__EmailSenderServiceUrl="${{ secrets.INNER_CIRCLE_PROD_EMAIL_SENDER_API_ROOT_URL }}" > /dev/null 2>&1
+
+  run-e2e-tests:
+    uses: ./.github/workflows/.reusable-e2e-tests-against-prod.yml
+    needs: [deploy-to-prod]
+    secrets: inherit

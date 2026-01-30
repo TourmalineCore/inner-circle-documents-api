@@ -2,7 +2,10 @@
   {
     "httpRequest": {
       "method": "POST",
-      "path": "/api/auth/login"
+      "path": "/api/auth/login",
+      "body": {
+        "login": "first-tenant-login-with-all-permissions"
+      }
     },
     "httpResponse": {
         "statusCode": 200,
