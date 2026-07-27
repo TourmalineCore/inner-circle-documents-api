@@ -5,7 +5,7 @@ on:
 
 jobs:
   e2e-test-against-prod:
-    runs-on: self-hosted  
+    runs-on: self-hosted
     steps:
     - uses: actions/checkout@v4
 
