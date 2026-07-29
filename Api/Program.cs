@@ -6,21 +6,7 @@ using DataAccess;
 using Microsoft.EntityFrameworkCore;
 using TourmalineCore.AspNetCore.JwtAuthentication.Core;
 
-const string CorsPolicyName = "DocumentsSpecificOrigins";
-
 var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.AddCors(options =>
-{
-  options.AddPolicy(CorsPolicyName,
-    policy =>
-    {
-      policy
-        .WithOrigins("*")
-        .AllowAnyHeader()
-        .AllowAnyMethod();
-    });
-});
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -52,10 +38,17 @@ using (var serviceScope = app.Services.CreateScope())
 
 app.UseRouting();
 
-app.UseCors(CorsPolicyName);
-
 app.UseJwtAuthentication();
 
-app.UseEndpoints(endpoints => { endpoints.MapControllers().RequireCors(CorsPolicyName); });
+var corsOptions = configuration.GetSection(nameof(CorsOptions)).Get<CorsOptions>();
+
+app.UseCors(
+  corsPolicyBuilder => corsPolicyBuilder
+      .WithOrigins(corsOptions!.AllowedOrigins)
+      .WithMethods("GET", "POST", "DELETE")
+      .WithHeaders("Authorization", "Content-Type")
+);
+
+app.MapControllers();
 
 app.Run();
