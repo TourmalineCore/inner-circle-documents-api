@@ -16,7 +16,7 @@ jobs:
     needs: [docker-build-and-push]
     steps:
       - name: Checkout local-env
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: TourmalineCore/inner-circle-local-env
 
@@ -44,10 +44,10 @@ jobs:
           push: never
 
       - name: Check out the repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v6
         with:
           java-version: '17'
           distribution: 'temurin'
@@ -70,7 +70,7 @@ jobs:
   e2e-karate-tests-in-docker-compose:
     runs-on: ubuntu-24.04
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
     - name: Run service via docker-compose and run Karate-tests
       run: |
         # The option --exit-code-from ensures that the command's exit code exactly matches the exit code of the specified service.
